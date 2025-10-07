@@ -3,10 +3,11 @@ import { Component } from '@angular/core';
 import { IProfile, ITodo } from '../../utils/interface';
 import { Profile } from '../../services/profile';
 import { FormsModule } from '@angular/forms';
+import { Counter } from '../counter/counter';
 
 @Component({
   selector: 'app-cv',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Counter],
   templateUrl: './cv.html',
   styleUrl: './cv.scss',
 })
