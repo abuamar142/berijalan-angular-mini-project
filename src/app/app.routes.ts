@@ -1,14 +1,20 @@
 import { Routes } from '@angular/router';
 import { Cv } from './components/cv/cv';
 import { Layout } from './components/layout/layout';
+import { List } from './components/pokemon/list/list';
 
 export const routes: Routes = [
   {
-    path: '**',
+    path: '',
     component: Layout,
     children: [
       { path: '', component: Cv },
-      { path: 'cv', component: Cv }
-    ]
-  }
+      { path: 'cv', component: Cv },
+      { path: 'pokemon', component: List },
+    ],
+  },
+  {
+    path: '**',
+    redirectTo: '',
+  },
 ];

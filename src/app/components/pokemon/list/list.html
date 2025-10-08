@@ -1,0 +1,175 @@
+<div class="bg-purple-300 min-h-[calc(100vh-80px)] py-8">
+  <div class="max-w-6xl mx-auto px-4">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-white mb-2">Pokemon List</h1>
+      <p class="text-purple-100 text-lg">Discover amazing Pokemon creatures!</p>
+
+      <!-- Search and Filter Section -->
+      <div
+        class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-4xl mx-auto"
+      >
+        <!-- Search Field -->
+        <div class="flex-1 w-full sm:w-auto">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+            placeholder="Search Pokémon by name..."
+            class="w-full px-4 py-3 rounded-2xl border border-purple-200 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-lg"
+          />
+        </div>
+
+        <!-- Type Filter Dropdown -->
+        <div class="w-full sm:w-auto">
+          <select
+            [(ngModel)]="selectedType"
+            (change)="onTypeFilter()"
+            class="w-full sm:w-48 px-4 py-3 rounded-2xl border border-purple-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-lg appearance-none cursor-pointer"
+          >
+            <option value="all" class="py-2">🎯 All Types</option>
+            @for (type of pokemonTypes(); track type.name) {
+            <option [value]="type.name" class="py-2 capitalize">
+              {{ type.name }}
+            </option>
+            }
+          </select>
+        </div>
+
+        <!-- Clear Filters Button -->
+        @if (searchTerm !== '' || selectedType !== 'all') {
+        <button
+          (click)="clearSearch()"
+          class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl shadow-lg transition-colors duration-200 font-medium"
+        >
+          🗑️ Clear
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="text-center py-12">
+      <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
+        <div
+          class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600 text-lg">Loading Pokemon...</p>
+      </div>
+    </div>
+    }
+
+    <!-- Pokemon Grid -->
+    @if (!loading() && filteredPokemons().length > 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      @for (pokemon of filteredPokemons(); track pokemon.name) {
+      <app-pokemon-card
+        pokemonName="{{ pokemon.name }}"
+        pokemonUrl="{{ pokemon.url }}"
+        [pokemonTypes]="pokemon.types || []"
+      ></app-pokemon-card>
+      }
+    </div>
+    }
+
+    <!-- Empty State -->
+    @if (!loading() && filteredPokemons().length === 0) {
+    <div class="text-center py-12">
+      <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
+        <div class="text-6xl mb-4">😔</div>
+        <p class="text-gray-600 text-lg">No Pokemon found</p>
+        <button
+          (click)="clearSearch()"
+          class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- Filter Results Info -->
+    @if (!loading() && (searchTerm !== '' || selectedType !== 'all')) {
+    <div class="text-center mt-8">
+      <div class="bg-white rounded-2xl px-6 py-3 shadow-lg max-w-2xl mx-auto">
+        <p class="text-gray-700 font-medium">
+          @if (filteredPokemons().length > 0) { 🔍 Found {{ filteredPokemons().length }} Pokemon @if
+          (searchTerm !== '') { matching "{{ searchTerm }}" } @if (selectedType !== 'all' &&
+          selectedType !== '') { @if (searchTerm !== '') { and } of type
+          <span
+            [class]="
+              getTypeColors(selectedType).bg +
+              ' ' +
+              getTypeColors(selectedType).text +
+              ' px-2 py-1 rounded-full text-xs font-bold uppercase'
+            "
+          >
+            {{ selectedType }}
+          </span>
+          }
+          <br /><span class="text-sm text-gray-500"
+            >from {{ allPokemons().length }} loaded Pokemon</span
+          >
+          } @else { 😔 No Pokemon found with current filters
+          <br /><span class="text-sm text-gray-500"
+            >Try different search terms or load more Pokemon</span
+          >
+          }
+        </p>
+      </div>
+    </div>
+    }
+
+    <!-- Pagination Controls -->
+    @if (!loading() && filteredPokemons().length > 0 && searchTerm === '' && selectedType === 'all')
+    {
+    <div class="flex flex-col items-center mt-8 space-y-4">
+      <!-- Page Info -->
+      <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+        <p class="text-gray-700 font-medium">
+          Page {{ currentPage() }} of {{ getTotalPages() }} | Loaded:
+          {{ allPokemons().length }} Pokemon
+          <span class="text-purple-600">({{ totalCount() }} total available)</span>
+        </p>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex items-center space-x-4">
+        <!-- Previous Button -->
+        <button
+          (click)="previousPage()"
+          [disabled]="!hasPrevious()"
+          [class]="
+            hasPrevious()
+              ? 'bg-white hover:bg-purple-50 text-purple-600 border-purple-200 hover:shadow-xl'
+              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+          "
+          class="font-bold py-3 px-6 rounded-2xl shadow-lg transition-all duration-200 border-2"
+        >
+          ← Previous
+        </button>
+
+        <!-- Show current page number -->
+        <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
+          <p class="text-gray-700 font-medium">Page {{ currentPage() }} of {{ getTotalPages() }}</p>
+        </div>
+
+        <!-- Next Button -->
+        <button
+          (click)="nextPage()"
+          [disabled]="!hasNext()"
+          [class]="
+            hasNext()
+              ? 'bg-white hover:bg-purple-50 text-purple-600 border-purple-200 hover:shadow-xl'
+              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+          "
+          class="font-bold py-3 px-6 rounded-2xl shadow-lg transition-all duration-200 border-2"
+        >
+          Next →
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+</div>

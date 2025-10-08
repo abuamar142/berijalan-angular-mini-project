@@ -16,3 +16,8 @@ export interface ITodo {
   task: string;
   completed: boolean;
 }
+
+export interface IPokemon {
+  name: string;
+  url: string;
+}

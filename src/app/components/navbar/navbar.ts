@@ -10,7 +10,9 @@ import { IMenu } from '../../utils/interface';
 })
 export class Navbar {
   menus: IMenu[] = [
-    { name: 'Pokemon List', path: '/pokemon-list' },
+    { name: 'CV', path: '/cv' },
+    { name: 'Pokemon', path: '/pokemon' },
+    { name: 'Counter', path: '/counter' },
     { name: 'My Pokemons', path: '/my-pokemons' },
   ];
 }
