@@ -15,8 +15,13 @@ export class Detail implements OnInit {
   loading = signal<boolean>(false);
   error = signal<string>('');
   playingSound = signal<boolean>(false);
+  evolutionChain = signal<any[]>([]);
 
-  constructor(private router: ActivatedRoute, private pokemonService: Pokemon) {}
+  constructor(
+    private router: ActivatedRoute,
+    private pokemonService: Pokemon,
+    private readonly routerr: Router
+  ) {}
 
   async ngOnInit() {
     const id = this.router.params.subscribe(async (params) => {
@@ -35,12 +40,71 @@ export class Detail implements OnInit {
       const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${this.pokemonId()}`;
       const details = await this.pokemonService.getPokemonDetails(pokemonUrl);
       this.pokemonData.set(details);
+
+      // Fetch evolution chain
+      await this.fetchEvolutionChain();
     } catch (error) {
       console.error('Error fetching Pokemon details:', error);
       this.error.set('Failed to load Pokemon details');
     } finally {
       this.loading.set(false);
     }
+  }
+
+  async fetchEvolutionChain() {
+    try {
+      this.loading.set(true);
+      const species = await this.pokemonService.getPokemonSpecies(this.pokemonId());
+      const evolutionData = await this.pokemonService.getEvolutionChain(
+        species.evolution_chain.url
+      );
+
+      // Parse evolution chain
+      const evolutions = this.parseEvolutionChain(evolutionData.chain);
+      this.evolutionChain.set(evolutions);
+    } catch (error) {
+      console.error('Error fetching evolution chain:', error);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  parseEvolutionChain(chain: any): any[] {
+    const evolutions: any[] = [];
+
+    const addEvolution = (evolution: any) => {
+      const id = this.extractIdFromUrl(evolution.species.url);
+      evolutions.push({
+        id: id,
+        name: evolution.species.name,
+        url: evolution.species.url,
+      });
+
+      if (evolution.evolves_to && evolution.evolves_to.length > 0) {
+        evolution.evolves_to.forEach((nextEvolution: any) => {
+          addEvolution(nextEvolution);
+        });
+      }
+    };
+
+    addEvolution(chain);
+
+    console.log('Parsed Evolutions:', evolutions);
+    return evolutions;
+  }
+
+  extractIdFromUrl(url: string): string {
+    const parts = url.split('/');
+    return parts[parts.length - 2];
+  }
+
+  async selectEvolution(evolutionId: string) {
+    this.pokemonId.set(evolutionId);
+    await this.fetchPokemonDetails();
+
+    // Update URL without page reload
+    // window.history.pushState({}, '', `/pokemon/${evolutionId}`);
+    this.routerr.navigate(['/pokemon', evolutionId]);
   }
 
   getPokemonImageUrl(id: number): string {

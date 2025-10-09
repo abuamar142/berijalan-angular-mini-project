@@ -64,4 +64,34 @@ export class Pokemon {
       throw error;
     }
   }
+
+  async getPokemonSpecies(id: string) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<{
+          id: number;
+          name: string;
+          evolution_chain: { url: string };
+        }>(`${this.url}pokemon-species/${id}`)
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching Pokémon species:', error);
+      throw error;
+    }
+  }
+
+  async getEvolutionChain(url: string) {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<{
+          chain: any;
+        }>(url)
+      );
+      return response;
+    } catch (error) {
+      console.error('Error fetching evolution chain:', error);
+      throw error;
+    }
+  }
 }
