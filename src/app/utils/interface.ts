@@ -20,4 +20,9 @@ export interface ITodo {
 export interface IPokemon {
   name: string;
   url: string;
+  types: string[];
+  height: number;
+  weight: number;
+  base_experience: number;
+  order: number;
 }

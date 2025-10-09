@@ -3,6 +3,7 @@ import { Pokemon } from '../../../services/pokemon';
 import { Card } from '../card/card';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list',
@@ -25,7 +26,7 @@ export class List implements OnInit {
   hasNext = signal<boolean>(false);
   hasPrevious = signal<boolean>(false);
 
-  constructor(private pokemonService: Pokemon) {}
+  constructor(private pokemonService: Pokemon, private router: Router) {}
 
   async ngOnInit() {
     await this.fetchPokemons();
@@ -153,5 +154,15 @@ export class List implements OnInit {
     };
 
     return typeColors[type] || typeColors['all'];
+  }
+
+  getPokemonId(url: string): string {
+    const id = url.split('/').filter(Boolean).pop();
+    return id || '1';
+  }
+
+  onPokemonSelected(pokemonUrl: string) {
+    const id = this.getPokemonId(pokemonUrl);
+    this.router.navigate(['/pokemon', id]);
   }
 }

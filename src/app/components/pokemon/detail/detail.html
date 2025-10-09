@@ -1,0 +1,182 @@
+<div class="bg-purple-300 min-h-[calc(100vh-80px)] py-2">
+  <div class="max-w-4xl mx-auto px-4">
+    <!-- Loading State -->
+    @if (loading()) {
+    <div class="text-center py-12">
+      <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
+        <div
+          class="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600 text-lg">Loading Pokemon details...</p>
+      </div>
+    </div>
+    }
+
+    <!-- Error State -->
+    @if (error() && !loading()) {
+    <div class="text-center py-12">
+      <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
+        <div class="text-6xl mb-4">😔</div>
+        <p class="text-gray-600 text-lg">{{ error() }}</p>
+        <button
+          (click)="fetchPokemonDetails()"
+          class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- Pokemon Details -->
+    @if (pokemonData() && !loading()) {
+    <div class="bg-white rounded-3xl shadow-xl p-4">
+      <!-- Header Section -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 capitalize mb-2">
+          {{ pokemonData().name }}
+        </h1>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Side - Image and Basic Info -->
+        <div class="text-center">
+          <!-- Pokemon Image -->
+          <div class="bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl p-8 mb-6">
+            <img
+              [src]="getPokemonImageUrl(pokemonData().id)"
+              [alt]="pokemonData().name"
+              class="w-64 h-64 mx-auto object-contain hover:scale-110 transition-transform duration-300"
+            />
+          </div>
+
+          <!-- Types -->
+          <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Types</h3>
+            <div class="flex justify-center gap-2 flex-wrap">
+              @for (typeInfo of pokemonData().types; track typeInfo.type.name) {
+              <span
+                [class]="
+                  getTypeColors(typeInfo.type.name).bg +
+                  ' ' +
+                  getTypeColors(typeInfo.type.name).text +
+                  ' px-4 py-2 rounded-full font-bold text-sm uppercase shadow-md'
+                "
+              >
+                {{ typeInfo.type.name }}
+              </span>
+              }
+            </div>
+          </div>
+
+          <!-- Pokemon Sound -->
+          <h3 class="text-lg font-bold text-gray-800 mb-3">Pokemon Sound</h3>
+          <button
+            (click)="playSound()"
+            [class]="
+              playingSound()
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-green-500 hover:bg-green-600 shadow-lg hover:shadow-xl'
+            "
+            class="inline-flex items-center px-6 py-3 rounded-2xl text-white font-bold transition-all duration-200 transform hover:scale-105"
+          >
+            @if (playingSound()) {
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Playing... } @else { Play Pokemon Sound }
+          </button>
+
+          <!-- Abilities -->
+          <div class="mt-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Abilities</h3>
+            <div class="flex flex-wrap gap-2">
+              @for (ability of pokemonData().abilities; track ability.ability.name) {
+              <span
+                class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium capitalize"
+              >
+                {{ ability.ability.name.replace('-', ' ') }}
+                @if (ability.is_hidden) {
+                <span class="text-xs">(Hidden)</span>
+                }
+              </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side - Stats and Details -->
+        <div>
+          <!-- Basic Info -->
+          <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Basic Information</h3>
+            <div class="bg-gray-50 rounded-2xl p-4">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-sm text-gray-600">Height</p>
+                  <p class="font-bold text-gray-800">{{ pokemonData().height / 10 }} m</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-600">Weight</p>
+                  <p class="font-bold text-gray-800">{{ pokemonData().weight / 10 }} kg</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-600">Base Experience</p>
+                  <p class="font-bold text-gray-800">
+                    {{ pokemonData().base_experience || 'Unknown' }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-600">Order</p>
+                  <p class="font-bold text-gray-800">#{{ pokemonData().order }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-3">Base Stats</h3>
+            <div class="space-y-1">
+              @for (stat of pokemonData().stats; track stat.stat.name) {
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm font-medium text-gray-700 capitalize">
+                    {{ stat.stat.name.replace('-', ' ') }}
+                  </span>
+                  <span class="font-bold text-gray-800">{{ stat.base_stat }}</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    class="bg-purple-600 h-2 rounded-full transition-all duration-500"
+                    [style.width.%]="(stat.base_stat / 255) * 100"
+                  ></div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

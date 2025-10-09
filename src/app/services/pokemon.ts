@@ -11,11 +11,10 @@ export class Pokemon {
   constructor(private readonly http: HttpClient) {}
 
   async getPokemonList(limit: number = 10, offset: number = 0) {
-    console.log('Fetching Pokémon list');
     try {
       const response = await firstValueFrom(
         this.http.get<{
-          results: { name: string; url: string, types: string[] }[];
+          results: { name: string; url: string; types: string[] }[];
           count: number;
           next: string | null;
           previous: string | null;
@@ -42,6 +41,10 @@ export class Pokemon {
           name: string;
           types: { type: { name: string; url: string } }[];
           sprites: { other: { 'official-artwork': { front_default: string } } };
+          height: number;
+          weight: number;
+          base_experience: number;
+          order: number;
         }>(url)
       );
       return response;

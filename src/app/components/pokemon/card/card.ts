@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IPokemon } from '../../../utils/interface';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -12,6 +13,9 @@ export class Card {
   @Input() pokemonUrl: string = '';
   @Input() pokemonName: string = '';
   @Input() pokemonTypes: string[] = [];
+  @Output() pokemonSelected = new EventEmitter<string>();
+
+  constructor(private router: Router) {}
 
   // Extract Pokemon ID from URL
   getPokemonId(url: string): string {
@@ -50,5 +54,10 @@ export class Card {
     };
 
     return typeColors[type] || typeColors['unknown'];
+  }
+
+  selectPokemon() {
+    const id = this.getPokemonId(this.pokemonUrl);
+    this.router.navigate(['/pokemon', id]);
   }
 }
