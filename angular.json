@@ -27,6 +27,7 @@
               }
             ],
             "styles": ["src/styles.scss"],
+            "polyfills": ["src/polyfills.ts"],
             "allowedCommonJsDependencies": [
               "firebase",
               "firebase/app",
