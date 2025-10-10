@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { firstValueFrom } from 'rxjs';
 export class Pokemon {
   url: string = 'https://pokeapi.co/api/v2/';
 
-  constructor(private readonly http: HttpClient) {}
+  http = inject(HttpClient);
 
   async getPokemonList(limit: number = 10, offset: number = 0) {
     try {

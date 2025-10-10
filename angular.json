@@ -26,8 +26,13 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
+            "styles": ["src/styles.scss"],
+            "allowedCommonJsDependencies": [
+              "firebase",
+              "firebase/app",
+              "firebase/auth",
+              "@firebase/auth",
+              "undici"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
@@ -85,18 +90,13 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ]
+            "styles": ["src/styles.scss"]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -104,8 +104,6 @@
   },
   "cli": {
     "analytics": "5616348f-69dd-4494-8fbf-5bce757563ef",
-    "schematicCollections": [
-      "angular-eslint"
-    ]
+    "schematicCollections": ["angular-eslint"]
   }
 }
