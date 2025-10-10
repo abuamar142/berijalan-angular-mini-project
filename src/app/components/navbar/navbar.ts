@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IMenu } from '../../utils/interface';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-navbar',
@@ -9,10 +10,15 @@ import { IMenu } from '../../utils/interface';
   styleUrl: './navbar.scss',
 })
 export class Navbar {
+  private readonly auth = inject(AuthService);
+
   menus: IMenu[] = [
     { name: 'CV', path: '/cv' },
     { name: 'Pokemon', path: '/pokemon' },
-    { name: 'Counter', path: '/counter' },
-    { name: 'My Pokemons', path: '/my-pokemons' },
+    { name: 'Login', path: '/login' },
   ];
+
+  async logout() {
+    await this.auth.logout();
+  }
 }

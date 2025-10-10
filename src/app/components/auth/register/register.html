@@ -1,0 +1,70 @@
+<div class="flex bg-purple-300 items-center justify-center min-h-screen py-8">
+  <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md mx-4">
+    <div class="text-center mb-8">
+      <img src="pokemon-logo.png" alt="Pokemon App Logo" class="h-32 mx-auto mb-4" />
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
+      <p class="text-purple-600">Join us today and get started</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()" class="space-y-6">
+      @if (errorMessage()) {
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        {{ errorMessage() }}
+      </div>
+      }
+
+      <div class="space-y-2">
+        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+        <input
+          id="email"
+          formControlName="email"
+          type="email"
+          required
+          class="w-full px-3 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+          placeholder="Enter your email"
+        />
+
+        <p class="text-red-600 text-sm mt-1">
+          @if ( registerForm.get('email')?.errors?.['required'] &&
+          registerForm.get('email')?.touched ) { Email is required. } @if (
+          registerForm.get('email')?.errors?.['email'] && registerForm.get('email')?.touched ) {
+          Please enter a valid email address. }
+        </p>
+      </div>
+
+      <div class="space-y-2">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input
+          id="password"
+          formControlName="password"
+          type="password"
+          required
+          class="w-full px-3 py-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200"
+          placeholder="Enter your password"
+        />
+
+        <p class="text-red-600 text-sm mt-1">
+          @if ( registerForm.get('password')?.errors?.['required'] &&
+          registerForm.get('password')?.touched ) { Password is required. } @if (
+          registerForm.get('password')?.errors?.['minlength'] &&
+          registerForm.get('password')?.touched ) { Password must be at least 6 characters long. }
+        </p>
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid || isLoading()"
+        class="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+      >
+        @if (isLoading()) { Creating Account... } @else { Create Account }
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <p class="text-sm text-gray-600">
+        Already have an account?
+        <a href="/login" class="text-purple-600 hover:text-purple-800 font-medium">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

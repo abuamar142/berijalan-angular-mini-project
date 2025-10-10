@@ -10,6 +10,9 @@
             <a [routerLink]="menu.path" class="text-gray-800 font-medium hover:text-purple-600 transition-colors duration-300">{{ menu.name }}</a>
           </li>
         }
+        <li>
+          <button (click)="logout()" class="text-red-600 font-medium hover:text-red-800 transition-colors duration-300">Logout</button>
+        </li>
       </ul>
     </div>
   </div>
