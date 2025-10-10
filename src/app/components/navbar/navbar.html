@@ -1,17 +1,35 @@
 <nav class="bg-purple-300 shadow-xl py-4">
   <div class="flex justify-between items-center max-w-6xl mx-auto px-8">
     <div class="flex items-center bg-white px-2 pt-2 rounded-2xl shadow-md">
-      <img src="pokemon-logo.png" alt="Pokemon Logo" class="h-10 w-auto">
+      <img src="pokemon-logo.png" alt="Pokemon Logo" class="h-10 w-auto" />
     </div>
     <div class="bg-white px-6 py-3 rounded-2xl shadow-md">
       <ul class="flex space-x-6">
         @for (menu of menus; track menu) {
-          <li>
-            <a [routerLink]="menu.path" class="text-gray-800 font-medium hover:text-purple-600 transition-colors duration-300">{{ menu.name }}</a>
-          </li>
+        <li>
+          <a
+            [routerLink]="menu.path"
+            class="text-gray-800 font-medium hover:text-purple-600 transition-colors duration-300"
+            >{{ menu.name }}</a
+          >
+        </li>
         }
         <li>
-          <button (click)="logout()" class="text-red-600 font-medium hover:text-red-800 transition-colors duration-300">Logout</button>
+          @if(auth.isAuthenticated()) {
+          <button
+            (click)="logout()"
+            class="text-red-600 font-medium rounded-lg transition duration-200 transform hover:cursor-pointer"
+          >
+            Logout
+          </button>
+          } @else {
+          <button
+            (click)="redirectToLogin()"
+            class="text-blue-600 font-medium rounded-lg transition duration-200 transform hover:cursor-pointer"
+          >
+            Login
+          </button>
+          }
         </li>
       </ul>
     </div>

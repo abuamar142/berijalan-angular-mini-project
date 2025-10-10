@@ -40,6 +40,10 @@ export class AuthService {
     }
   }
 
+  isAuthenticated(): boolean {
+    return this.isSessionAvailable() && sessionStorage.getItem('user') != null;
+  }
+
   async login(email: string, password: string): Promise<void> {
     const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
 

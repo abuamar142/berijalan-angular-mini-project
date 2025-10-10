@@ -1,34 +1,40 @@
 import { Routes } from '@angular/router';
-import { Cv } from './components/cv/cv';
 import { Layout } from './components/layout/layout';
-import { List } from './components/pokemon/list/list';
-import { Detail } from './components/pokemon/detail/detail';
 import { Login } from './components/auth/login/login';
 import { Register } from './components/auth/register/register';
 import { authGuard } from './components/guard/auth.guard';
+import { guestGuard } from './components/guard/guest.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
     component: Login,
+    canActivate: [guestGuard],
   },
   {
     path: 'register',
     component: Register,
+    canActivate: [guestGuard],
   },
   {
     path: '',
     component: Layout,
-    canActivate: [authGuard],
     children: [
-      { path: '', component: Cv },
-      { path: 'cv', component: Cv },
-      { path: 'pokemon', component: List },
       {
-        path: 'pokemon/:id',
-        component: Detail,
+        path: '',
+        loadChildren: () => import('./components/cv/cv.routes').then((m) => m.cvRoutes),
+      },
+      {
+        path: 'cv',
+        loadChildren: () => import('./components/cv/cv.routes').then((m) => m.cvRoutes),
       },
     ],
+  },
+  {
+    path: 'pokemon',
+    component: Layout,
+    canActivate: [authGuard],
+    loadChildren: () => import('./components/pokemon/pokemon.routes').then((m) => m.pokemonRoutes),
   },
   {
     path: '**',
