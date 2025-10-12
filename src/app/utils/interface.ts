@@ -21,10 +21,10 @@ export interface IPokemon {
   name: string;
   url: string;
   types: string[];
-  height: number;
-  weight: number;
-  base_experience: number;
-  order: number;
+  height?: number;
+  weight?: number;
+  base_experience?: number;
+  order?: number;
 }
 
 export interface FavoritePokemon {

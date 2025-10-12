@@ -9,6 +9,41 @@
       <div
         class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-4xl mx-auto"
       >
+        <!-- Random Button -->
+        <div class="w-full sm:w-auto">
+          <button
+            (click)="showRandomPokemon()"
+            [disabled]="loading()"
+            class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            @if (loading()) {
+            <div class="flex items-center justify-center">
+              <svg
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Loading...
+            </div>
+            } @else { Random }
+          </button>
+        </div>
+
         <!-- Search Field -->
         <div class="flex-1 w-full sm:w-auto">
           <input
@@ -17,6 +52,7 @@
             (input)="onSearch()"
             placeholder="Search Pokémon by name..."
             class="w-full px-4 py-3 rounded-2xl border border-purple-200 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-lg"
+            [disabled]="showRandomOnly()"
           />
         </div>
 
@@ -26,8 +62,9 @@
             [(ngModel)]="selectedType"
             (change)="onTypeFilter()"
             class="w-full sm:w-48 px-4 py-3 rounded-2xl border border-purple-200 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-lg appearance-none cursor-pointer"
+            [disabled]="showRandomOnly()"
           >
-            <option value="all" class="py-2">🎯 All Types</option>
+            <option value="all" class="py-2 text-center">All Types</option>
             @for (type of pokemonTypes(); track type.name) {
             <option [value]="type.name" class="py-2 capitalize">
               {{ type.name }}
@@ -41,8 +78,19 @@
         <button
           (click)="clearSearch()"
           class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl shadow-lg transition-colors duration-200 font-medium"
+          [disabled]="showRandomOnly()"
         >
-          🗑️ Clear
+          Clear
+        </button>
+        }
+
+        <!-- Back to Normal View Button (when showing random) -->
+        @if (showRandomOnly()) {
+        <button
+          (click)="backToNormalView()"
+          class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-lg transition-colors duration-200 font-medium"
+        >
+          Back to List
         </button>
         }
       </div>
@@ -60,8 +108,31 @@
     </div>
     }
 
-    <!-- Pokemon Grid -->
-    @if (!loading() && filteredPokemons().length > 0) {
+    <!-- Random Pokemon Display -->
+    @if (!loading() && showRandomOnly() && randomPokemon()) {
+    <div class="flex justify-center">
+      <div class="w-full max-w-sm">
+        <app-pokemon-card
+          [pokemonName]="randomPokemon()!!.name"
+          [pokemonUrl]="randomPokemon()!!.url"
+          [pokemonTypes]="randomPokemon()!!.types || []"
+        ></app-pokemon-card>
+      </div>
+    </div>
+    <div class="text-center mt-8">
+      <div class="bg-white rounded-2xl px-6 py-3 shadow-lg max-w-2xl mx-auto mb-6">
+        <p class="text-gray-700 font-medium">
+          Random Pokemon Discovery!
+          <br /><span class="text-sm text-gray-500"
+            >Here's a randomly selected Pokemon for you to explore</span
+          >
+        </p>
+      </div>
+    </div>
+    }
+
+    <!-- Pokemon Grid (Normal View) -->
+    @if (!loading() && !showRandomOnly() && filteredPokemons().length > 0) {
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       @for (pokemon of filteredPokemons(); track pokemon.name) {
       <app-pokemon-card
@@ -73,8 +144,8 @@
     </div>
     }
 
-    <!-- Empty State -->
-    @if (!loading() && filteredPokemons().length === 0) {
+    <!-- Empty State (Normal View Only) -->
+    @if (!loading() && !showRandomOnly() && filteredPokemons().length === 0) {
     <div class="text-center py-12">
       <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
         <div class="text-6xl mb-4">😔</div>
@@ -89,8 +160,8 @@
     </div>
     }
 
-    <!-- Filter Results Info -->
-    @if (!loading() && (searchTerm !== '' || selectedType !== 'all')) {
+    <!-- Filter Results Info (Normal View) -->
+    @if (!loading() && !showRandomOnly() && (searchTerm !== '' || selectedType !== 'all')) {
     <div class="text-center mt-8">
       <div class="bg-white rounded-2xl px-6 py-3 shadow-lg max-w-2xl mx-auto">
         <p class="text-gray-700 font-medium">
@@ -121,9 +192,9 @@
     </div>
     }
 
-    <!-- Pagination Controls -->
-    @if (!loading() && filteredPokemons().length > 0 && searchTerm === '' && selectedType === 'all')
-    {
+    <!-- Pagination Controls (Normal View) -->
+    @if (!loading() && !showRandomOnly() && filteredPokemons().length > 0 && searchTerm === '' &&
+    selectedType === 'all') {
     <div class="flex flex-col items-center mt-8 space-y-4">
       <!-- Page Info -->
       <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">

@@ -10,6 +10,11 @@ export class Pokemon {
 
   http = inject(HttpClient);
 
+  // Get Pokemon url from Id
+  getPokemonUrl(id: string): string {
+    return `${this.url}pokemon/${id}`;
+  }
+
   // Extract Pokemon ID from URL
   getPokemonId(url: string): string {
     const id = url.split('/').filter(Boolean).pop();

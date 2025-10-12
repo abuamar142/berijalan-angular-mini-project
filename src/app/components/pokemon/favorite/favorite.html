@@ -20,17 +20,10 @@
     @if (favorites().length === 0) {
     <div class="text-center py-12">
       <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
-        <div class="text-6xl mb-4">💔</div>
         <h2 class="text-2xl font-semibold text-gray-600 mb-2">No Favorite Pokemon Yet</h2>
-        <p class="text-gray-500 mb-6">
+        <p class="text-gray-500">
           Start adding Pokemon to your favorites by clicking the heart icon on any Pokemon card!
         </p>
-        <button
-          (click)="goToList()"
-          class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200"
-        >
-          Browse Pokemon
-        </button>
       </div>
     </div>
     }

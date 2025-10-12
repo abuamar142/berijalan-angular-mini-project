@@ -4,6 +4,7 @@ import { Card } from '../card/card';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { IPokemon } from '../../../utils/interface';
 
 @Component({
   selector: 'app-list',
@@ -12,12 +13,14 @@ import { Router } from '@angular/router';
   styleUrl: './list.scss',
 })
 export class List implements OnInit {
-  allPokemons = signal<any[]>([]);
-  currentPagePokemons = signal<any[]>([]);
-  filteredPokemons = signal<any[]>([]);
+  allPokemons = signal<IPokemon[]>([]);
+  currentPagePokemons = signal<IPokemon[]>([]);
+  filteredPokemons = signal<IPokemon[]>([]);
   pokemonTypes = signal<any[]>([]);
 
   loading = signal<boolean>(false);
+  randomPokemon = signal<IPokemon | null>(null);
+  showRandomOnly = signal<boolean>(false);
 
   // Pagination properties
   currentPage = signal<number>(1);
@@ -159,5 +162,43 @@ export class List implements OnInit {
   onPokemonSelected(pokemonUrl: string) {
     const id = this.pokemonService.getPokemonId(pokemonUrl);
     this.router.navigate(['/pokemon', id]);
+  }
+
+  async showRandomPokemon() {
+    try {
+      this.loading.set(true);
+
+      // Generate random ID between 1 and 1025 (total Pokemon in API)
+      const randomId = Math.floor(Math.random() * 1025) + 1;
+
+      // Fetch random Pokemon details
+      const pokemonUrl = this.pokemonService.getPokemonUrl(randomId.toString());
+      const randomPokemonData = await this.pokemonService.getPokemonDetails(pokemonUrl);
+
+      // Transform to match our Pokemon interface
+      const randomPokemon: IPokemon = {
+        name: randomPokemonData.name,
+        url: pokemonUrl,
+        types: randomPokemonData.types.map((t: any) => t.type.name),
+      };
+
+      this.randomPokemon.set(randomPokemon);
+      this.showRandomOnly.set(true);
+
+      // Clear search filters when showing random
+      this.searchTerm = '';
+      this.selectedType = 'all';
+    } catch (error) {
+      console.error('Error fetching random Pokemon:', error);
+      alert('Failed to fetch random Pokemon. Please try again.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  backToNormalView() {
+    this.showRandomOnly.set(false);
+    this.randomPokemon.set(null);
+    this.updateFilteredList();
   }
 }
