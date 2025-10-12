@@ -156,13 +156,8 @@ export class List implements OnInit {
     return typeColors[type] || typeColors['all'];
   }
 
-  getPokemonId(url: string): string {
-    const id = url.split('/').filter(Boolean).pop();
-    return id || '1';
-  }
-
   onPokemonSelected(pokemonUrl: string) {
-    const id = this.getPokemonId(pokemonUrl);
+    const id = this.pokemonService.getPokemonId(pokemonUrl);
     this.router.navigate(['/pokemon', id]);
   }
 }

@@ -10,6 +10,19 @@ export class Pokemon {
 
   http = inject(HttpClient);
 
+  // Extract Pokemon ID from URL
+  getPokemonId(url: string): string {
+    const id = url.split('/').filter(Boolean).pop();
+    return id || '1';
+  }
+
+  // Construct image URL using Pokemon ID
+  getPokemonImageUrl(url: string): string {
+    const id = this.getPokemonId(url);
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  }
+
+  // Fetch list of Pokemon with details
   async getPokemonList(limit: number = 10, offset: number = 0) {
     try {
       const response = await firstValueFrom(
@@ -33,6 +46,7 @@ export class Pokemon {
     }
   }
 
+  // Fetch detailed information about a specific Pokemon
   async getPokemonDetails(url: string) {
     try {
       const response = await firstValueFrom(
@@ -54,6 +68,7 @@ export class Pokemon {
     }
   }
 
+  // Fetch all available Pokemon types
   async getPokemonTypes() {
     const url = 'https://pokeapi.co/api/v2/type?limit=21';
     try {
@@ -65,6 +80,7 @@ export class Pokemon {
     }
   }
 
+  // Fetch species information for a specific Pokemon
   async getPokemonSpecies(id: string) {
     try {
       const response = await firstValueFrom(
@@ -81,6 +97,7 @@ export class Pokemon {
     }
   }
 
+  // Fetch evolution chain data
   async getEvolutionChain(url: string) {
     try {
       const response = await firstValueFrom(

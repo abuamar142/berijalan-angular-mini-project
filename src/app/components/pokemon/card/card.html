@@ -2,9 +2,30 @@
   class="bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 overflow-hidden"
 >
   <!-- Pokemon Image -->
-  <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-6 text-center">
+  <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-6 text-center relative">
+    <!-- Favorite Button -->
+    <button
+      (click)="toggleFavorite($event)"
+      class="absolute top-2 right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+      [class]="
+        isFavorite()
+          ? 'bg-red-500 hover:bg-red-600 text-white'
+          : 'bg-white hover:bg-gray-100 text-gray-400 hover:text-red-500'
+      "
+      [title]="isFavorite() ? 'Remove from favorites' : 'Add to favorites'"
+    >
+      <!-- Heart Icon -->
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+
     <img
-      [src]="getPokemonImageUrl(pokemonUrl)"
+      [src]="pokemonService.getPokemonImageUrl(pokemonUrl)"
       [alt]="pokemonName"
       class="w-32 h-32 mx-auto object-contain hover:scale-110 transition-transform duration-300"
       loading="lazy"

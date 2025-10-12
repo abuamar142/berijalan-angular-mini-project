@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Pokemon } from '../../../services/pokemon';
+import { FavoriteService } from '../../../services/favorite';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,6 +17,8 @@ export class Detail implements OnInit {
   error = signal<string>('');
   playingSound = signal<boolean>(false);
   evolutionChain = signal<any[]>([]);
+
+  private favoriteService = inject(FavoriteService);
 
   constructor(
     private router: ActivatedRoute,
@@ -147,5 +150,25 @@ export class Detail implements OnInit {
         this.playingSound.set(false);
       };
     }
+  }
+
+  toggleFavorite() {
+    if (this.pokemonData()) {
+      const pokemon = {
+        id: this.pokemonData().id,
+        name: this.pokemonData().name,
+        url: `https://pokeapi.co/api/v2/pokemon/${this.pokemonData().id}/`,
+        types: this.pokemonData().types.map((t: any) => t.type.name),
+      };
+
+      this.favoriteService.toggleFavorite(pokemon);
+    }
+  }
+
+  isFavorite(): boolean {
+    if (this.pokemonData()) {
+      return this.favoriteService.isFavorite(this.pokemonData().id);
+    }
+    return false;
   }
 }

@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { IPokemon } from '../../../utils/interface';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FavoriteService } from '../../../services/favorite';
+import { Pokemon } from '../../../services/pokemon';
 
 @Component({
   selector: 'app-pokemon-card',
@@ -15,19 +17,11 @@ export class Card {
   @Input() pokemonTypes: string[] = [];
   @Output() pokemonSelected = new EventEmitter<string>();
 
+  private favoriteService = inject(FavoriteService);
+
   constructor(private router: Router) {}
 
-  // Extract Pokemon ID from URL
-  getPokemonId(url: string): string {
-    const id = url.split('/').filter(Boolean).pop();
-    return id || '1';
-  }
-
-  // Construct image URL using Pokemon ID
-  getPokemonImageUrl(url: string): string {
-    const id = this.getPokemonId(url);
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
-  }
+  pokemonService = inject(Pokemon);
 
   // Get type-specific colors
   getTypeColors(type: string): { bg: string; text: string } {
@@ -57,7 +51,25 @@ export class Card {
   }
 
   selectPokemon() {
-    const id = this.getPokemonId(this.pokemonUrl);
+    const id = this.pokemonService.getPokemonId(this.pokemonUrl);
     this.router.navigate(['/pokemon', id]);
+  }
+
+  toggleFavorite(event: Event) {
+    event.stopPropagation(); // Prevent navigation when clicking favorite button
+
+    const pokemon = {
+      id: parseInt(this.pokemonService.getPokemonId(this.pokemonUrl)),
+      name: this.pokemonName,
+      url: this.pokemonUrl,
+      types: this.pokemonTypes,
+    };
+
+    this.favoriteService.toggleFavorite(pokemon);
+  }
+
+  isFavorite(): boolean {
+    const id = parseInt(this.pokemonService.getPokemonId(this.pokemonUrl));
+    return this.favoriteService.isFavorite(id);
   }
 }

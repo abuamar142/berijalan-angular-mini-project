@@ -26,3 +26,12 @@ export interface IPokemon {
   base_experience: number;
   order: number;
 }
+
+export interface FavoritePokemon {
+  id: number;
+  name: string;
+  url: string;
+  types: string[];
+  imageUrl: string;
+  addedAt: string;
+}

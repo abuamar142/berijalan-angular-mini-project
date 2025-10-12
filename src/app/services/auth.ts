@@ -7,6 +7,7 @@ import {
   signInWithEmailAndPassword,
 } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { FavoriteService } from './favorite';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 export class AuthService {
   private readonly auth: Auth = inject(Auth);
   private readonly router = inject(Router);
+  private readonly favoriteService = inject(FavoriteService);
 
   async register(email: string, password: string): Promise<void> {
     const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
@@ -68,6 +70,9 @@ export class AuthService {
       if (this.isSessionAvailable()) {
         sessionStorage.removeItem('user');
       }
+
+      // Clear favorites when user logs out
+      this.favoriteService.clearAllFavorites();
 
       this.router.navigate(['/login']);
     } catch (error) {

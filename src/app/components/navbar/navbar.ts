@@ -16,6 +16,7 @@ export class Navbar {
   menus: IMenu[] = [
     { name: 'CV', path: '/' },
     { name: 'Pokemon', path: '/pokemon' },
+    { name: 'Favorites', path: '/pokemon/favorites' },
   ];
 
   async logout() {
