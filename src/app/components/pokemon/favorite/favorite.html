@@ -7,12 +7,9 @@
 
       <!-- Action Section -->
       <div class="mt-6 flex justify-center">
-        <button
-          (click)="goToList()"
-          class="px-6 py-3 bg-white hover:bg-purple-50 text-purple-600 border-purple-200 hover:shadow-xl font-bold rounded-2xl shadow-lg transition-all duration-200 border-2"
-        >
-          Browse Pokemon List
-        </button>
+        <app-button variant="secondary" size="lg" (buttonClick)="goToList()">
+          All Pokemon
+        </app-button>
       </div>
     </div>
 

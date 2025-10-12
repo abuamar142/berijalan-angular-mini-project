@@ -11,37 +11,16 @@
       >
         <!-- Random Button -->
         <div class="w-full sm:w-auto">
-          <button
-            (click)="showRandomPokemon()"
+          <app-button
+            variant="gradient"
+            size="lg"
+            [fullWidth]="true"
+            [loading]="loading()"
             [disabled]="loading()"
-            class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            (buttonClick)="showRandomPokemon()"
           >
-            @if (loading()) {
-            <div class="flex items-center justify-center">
-              <svg
-                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Loading...
-            </div>
-            } @else { Random }
-          </button>
+            Random
+          </app-button>
         </div>
 
         <!-- Search Field -->
@@ -75,23 +54,21 @@
 
         <!-- Clear Filters Button -->
         @if (searchTerm !== '' || selectedType !== 'all') {
-        <button
-          (click)="clearSearch()"
-          class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl shadow-lg transition-colors duration-200 font-medium"
+        <app-button
+          variant="danger"
+          size="lg"
           [disabled]="showRandomOnly()"
+          (buttonClick)="clearSearch()"
         >
           Clear
-        </button>
+        </app-button>
         }
 
         <!-- Back to Normal View Button (when showing random) -->
         @if (showRandomOnly()) {
-        <button
-          (click)="backToNormalView()"
-          class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl shadow-lg transition-colors duration-200 font-medium"
-        >
+        <app-button variant="info" size="lg" (buttonClick)="backToNormalView()">
           Back to List
-        </button>
+        </app-button>
         }
       </div>
     </div>
@@ -150,12 +127,11 @@
       <div class="bg-white rounded-3xl p-8 shadow-xl max-w-md mx-auto">
         <div class="text-6xl mb-4">😔</div>
         <p class="text-gray-600 text-lg">No Pokemon found</p>
-        <button
-          (click)="clearSearch()"
-          class="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200"
-        >
-          Try Again
-        </button>
+        <div class="mt-4">
+          <app-button variant="primary" size="md" (buttonClick)="clearSearch()">
+            Try Again
+          </app-button>
+        </div>
       </div>
     </div>
     }
@@ -206,18 +182,14 @@
       <!-- Navigation Buttons -->
       <div class="flex items-center space-x-4">
         <!-- Previous Button -->
-        <button
-          (click)="previousPage()"
+        <app-button
+          variant="secondary"
+          size="lg"
           [disabled]="!hasPrevious()"
-          [class]="
-            hasPrevious()
-              ? 'bg-white hover:bg-purple-50 text-purple-600 border-purple-200 hover:shadow-xl'
-              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-          "
-          class="font-bold py-3 px-6 rounded-2xl shadow-lg transition-all duration-200 border-2"
+          (buttonClick)="previousPage()"
         >
-          ← Previous
-        </button>
+          Previous
+        </app-button>
 
         <!-- Show current page number -->
         <div class="bg-white rounded-2xl px-6 py-3 shadow-lg">
@@ -225,18 +197,14 @@
         </div>
 
         <!-- Next Button -->
-        <button
-          (click)="nextPage()"
+        <app-button
+          variant="secondary"
+          size="lg"
           [disabled]="!hasNext()"
-          [class]="
-            hasNext()
-              ? 'bg-white hover:bg-purple-50 text-purple-600 border-purple-200 hover:shadow-xl'
-              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-          "
-          class="font-bold py-3 px-6 rounded-2xl shadow-lg transition-all duration-200 border-2"
+          (buttonClick)="nextPage()"
         >
-          Next →
-        </button>
+          Next
+        </app-button>
       </div>
     </div>
     }

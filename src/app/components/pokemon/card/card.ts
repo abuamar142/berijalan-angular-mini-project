@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FavoriteService } from '../../../services/favorite';
 import { Pokemon } from '../../../services/pokemon';
+import { Button } from '../../button/button';
 
 @Component({
   selector: 'app-pokemon-card',
-  imports: [CommonModule],
+  imports: [CommonModule, Button],
   templateUrl: './card.html',
   styleUrl: './card.scss',
 })

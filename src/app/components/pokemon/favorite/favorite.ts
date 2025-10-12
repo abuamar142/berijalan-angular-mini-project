@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Card } from '../card/card';
 import { FavoriteService } from '../../../services/favorite';
 import { Router } from '@angular/router';
+import { Button } from '../../button/button';
 
 @Component({
   selector: 'app-favorite',
   standalone: true,
-  imports: [CommonModule, Card],
+  imports: [CommonModule, Card, Button],
   templateUrl: './favorite.html',
   styleUrl: './favorite.scss',
 })

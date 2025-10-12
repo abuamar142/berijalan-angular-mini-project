@@ -5,10 +5,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IPokemon } from '../../../utils/interface';
+import { Button } from '../../button/button';
 
 @Component({
   selector: 'app-list',
-  imports: [CommonModule, Card, FormsModule],
+  imports: [CommonModule, Card, FormsModule, Button],
   templateUrl: './list.html',
   styleUrl: './list.scss',
 })

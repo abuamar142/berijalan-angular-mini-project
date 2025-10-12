@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Button } from '../../button/button';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, Button],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -32,7 +33,7 @@ export class Login {
       this.router.navigate(['']);
     } catch (error: any) {
       console.error('Login failed:', error);
-      
+
       // Set user-friendly error message based on Firebase error codes
       let errorMsg = 'Login failed. Please try again.';
       if (error?.code === 'auth/user-not-found' || error?.code === 'auth/wrong-password') {
@@ -44,7 +45,7 @@ export class Login {
       } else if (error?.code === 'auth/network-request-failed') {
         errorMsg = 'Network error. Please check your internet connection.';
       }
-      
+
       this.errorMessage.set(errorMsg);
     } finally {
       this.isLoading.set(false);

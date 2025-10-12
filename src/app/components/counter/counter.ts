@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { Button } from '../button/button';
 
 @Component({
   selector: 'app-counter',
-  imports: [],
+  standalone: true,
+  imports: [Button],
   templateUrl: './counter.html',
   styleUrl: './counter.scss',
 })

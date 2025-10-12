@@ -3,10 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Pokemon } from '../../../services/pokemon';
 import { FavoriteService } from '../../../services/favorite';
 import { CommonModule } from '@angular/common';
+import { Button } from '../../button/button';
 
 @Component({
   selector: 'app-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, Button],
   templateUrl: './detail.html',
   styleUrl: './detail.scss',
 })
