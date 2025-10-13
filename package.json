@@ -34,6 +34,7 @@
     "@angular/platform-server": "^20.3.0",
     "@angular/router": "^20.3.0",
     "@angular/ssr": "^20.3.4",
+    "@ngrx/store": "^20.0.1",
     "@tailwindcss/postcss": "^4.1.14",
     "express": "^5.1.0",
     "firebase": "^10.14.0",

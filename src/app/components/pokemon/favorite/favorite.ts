@@ -22,6 +22,10 @@ export class Favorite implements OnInit {
     // Favorites sudah di-load dari localStorage oleh service
   }
 
+  removeAllFavorites() {
+    this.favoriteService.clearAllFavorites();
+  }
+
   goToList() {
     this.router.navigate(['/pokemon']);
   }

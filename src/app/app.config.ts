@@ -10,6 +10,8 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { environment } from './environment';
+import { provideStore } from '@ngrx/store';
+import { favoriteReducer } from './store/favorite/favorite.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,5 +22,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
+    provideStore({ favorite: favoriteReducer }),
   ],
 };

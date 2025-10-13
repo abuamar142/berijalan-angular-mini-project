@@ -1,6 +1,7 @@
 export interface IMenu {
   name: string;
   path: string;
+  needAuth?: boolean;
 }
 
 export interface IProfile {

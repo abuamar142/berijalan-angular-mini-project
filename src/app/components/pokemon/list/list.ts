@@ -30,6 +30,10 @@ export class List implements OnInit {
   hasNext = signal<boolean>(false);
   hasPrevious = signal<boolean>(false);
 
+  // Cache untuk menyimpan data Pokemon per page
+  private pokemonCache = new Map<number, IPokemon[]>();
+  private maxLoadedPage = 0;
+
   constructor(private pokemonService: Pokemon, private router: Router) {}
 
   async ngOnInit() {
@@ -49,34 +53,65 @@ export class List implements OnInit {
   async fetchPokemons(page: number = 1) {
     try {
       this.loading.set(true);
+
+      // Check if we already have this page cached
+      if (this.pokemonCache.has(page)) {
+        const cachedPokemons = this.pokemonCache.get(page)!;
+        this.currentPagePokemons.set(cachedPokemons);
+        this.currentPage.set(page);
+        this.updatePaginationInfo(page);
+        this.updateFilteredList();
+        this.loading.set(false);
+        return;
+      }
+
       const offset = (page - 1) * this.itemsPerPage;
       const response = await this.pokemonService.getPokemonList(this.itemsPerPage, offset);
 
+      // Cache the fetched Pokemon for this page
+      this.pokemonCache.set(page, response.results);
       this.currentPagePokemons.set(response.results);
 
-      if (page === 1) {
-        this.allPokemons.set(response.results);
-      } else {
-        // Append new data
-        const currentPokemons = this.allPokemons();
-        const newPokemons = response.results.filter(
-          (newPokemon) => !currentPokemons.some((existing) => existing.name === newPokemon.name)
-        );
-        this.allPokemons.set([...currentPokemons, ...newPokemons]);
+      // Update max loaded page
+      if (page > this.maxLoadedPage) {
+        this.maxLoadedPage = page;
       }
 
-      // Update filtered list based on current search
-      this.updateFilteredList();
+      // Rebuild allPokemons from cache in order
+      this.rebuildAllPokemonsFromCache();
 
+      // Update pagination info
       this.totalCount.set(response.count);
       this.hasNext.set(response.next !== null);
       this.hasPrevious.set(response.previous !== null);
       this.currentPage.set(page);
+
+      // Update filtered list based on current search
+      this.updateFilteredList();
     } catch (error) {
       console.error('Error fetching Pokémon list:', error);
     } finally {
       this.loading.set(false);
     }
+  }
+
+  private updatePaginationInfo(page: number) {
+    const total = this.totalCount();
+    this.hasPrevious.set(page > 1);
+    this.hasNext.set(page < Math.ceil(total / this.itemsPerPage));
+  }
+
+  private rebuildAllPokemonsFromCache() {
+    const allPokemons: IPokemon[] = [];
+
+    const sortedPages = Array.from(this.pokemonCache.keys()).sort((a, b) => a - b);
+
+    for (const pageNum of sortedPages) {
+      const pagePokemons = this.pokemonCache.get(pageNum)!;
+      allPokemons.push(...pagePokemons);
+    }
+
+    this.allPokemons.set(allPokemons);
   }
 
   async nextPage() {
@@ -99,7 +134,13 @@ export class List implements OnInit {
     const term = this.searchTerm.toLowerCase();
     const typeFilter = this.selectedType;
 
-    let pokemonsToFilter = this.searchTerm === '' ? this.currentPagePokemons() : this.allPokemons();
+    let pokemonsToFilter: IPokemon[];
+
+    if (term !== '' || typeFilter !== 'all') {
+      pokemonsToFilter = this.allPokemons();
+    } else {
+      pokemonsToFilter = this.currentPagePokemons();
+    }
 
     let filtered = pokemonsToFilter;
 
@@ -119,17 +160,50 @@ export class List implements OnInit {
   searchTerm: string = '';
   selectedType: string = 'all';
 
-  onSearch() {
+  async onSearch() {
+    if (this.searchTerm !== '') {
+      await this.ensureEnoughDataForSearch();
+    }
     this.updateFilteredList();
   }
 
-  onTypeFilter() {
+  async onTypeFilter() {
+    if (this.selectedType !== 'all') {
+      await this.ensureEnoughDataForSearch();
+    }
     this.updateFilteredList();
+  }
+
+  private async ensureEnoughDataForSearch() {
+    const totalPages = Math.ceil(this.totalCount() / this.itemsPerPage);
+    const pagesToLoad = Math.min(totalPages, 10);
+
+    if (this.maxLoadedPage < pagesToLoad) {
+      this.loading.set(true);
+      try {
+        // Load pages we haven't loaded yet
+        for (let page = this.maxLoadedPage + 1; page <= pagesToLoad; page++) {
+          if (!this.pokemonCache.has(page)) {
+            const offset = (page - 1) * this.itemsPerPage;
+            const response = await this.pokemonService.getPokemonList(this.itemsPerPage, offset);
+            this.pokemonCache.set(page, response.results);
+            this.maxLoadedPage = page;
+          }
+        }
+
+        this.rebuildAllPokemonsFromCache();
+      } catch (error) {
+        console.error('Error loading additional Pokemon data:', error);
+      } finally {
+        this.loading.set(false);
+      }
+    }
   }
 
   clearSearch() {
     this.searchTerm = '';
     this.selectedType = 'all';
+    this.updatePaginationInfo(this.currentPage());
     this.updateFilteredList();
   }
 

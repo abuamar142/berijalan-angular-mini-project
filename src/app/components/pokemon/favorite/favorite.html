@@ -6,9 +6,19 @@
       <p class="text-purple-100 text-lg">Your collection of favorite Pokemon creatures!</p>
 
       <!-- Action Section -->
-      <div class="mt-6 flex justify-center">
+      <div class="mt-6 flex justify-center gap-4 max-w-4xl mx-auto">
         <app-button variant="secondary" size="lg" (buttonClick)="goToList()">
           All Pokemon
+        </app-button>
+
+        <!-- Button for clearing favorites -->
+        <app-button
+          variant="danger"
+          size="lg"
+          (buttonClick)="removeAllFavorites()"
+          [disabled]="favorites().length === 0"
+        >
+          Clear Favorites
         </app-button>
       </div>
     </div>

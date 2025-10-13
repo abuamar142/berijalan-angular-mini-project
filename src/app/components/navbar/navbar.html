@@ -5,15 +5,23 @@
     </div>
     <div class="bg-white px-6 py-3 rounded-2xl shadow-md">
       <ul class="flex space-x-6">
-        @for (menu of menus; track menu) {
+        @for (menu of menus; track menu) { @if (!menu.needAuth || (menu.needAuth &&
+        auth.isAuthenticated())) {
         <li>
           <a
             [routerLink]="menu.path"
-            class="text-gray-800 font-medium hover:text-purple-600 transition-colors duration-300"
-            >{{ menu.name }}</a
-          >
+            class="text-gray-800 font-medium hover:text-purple-600 transition-colors duration-300 flex items-center gap-2"
+            >{{ menu.name }}
+            @if (menu.name === 'Favorites' && favoriteService.favorites().length > 0) {
+            <span
+              class="bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[20px] text-center"
+            >
+              {{ favoriteService.favorites().length }}
+            </span>
+            }
+          </a>
         </li>
-        }
+        } }
         <li>
           @if(auth.isAuthenticated()) {
           <button
